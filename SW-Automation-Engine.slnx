@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="Solidworks_Lib/Solidworks_Lib.csproj" />
+  <Project Path="Scripts/InspectFillet/InspectFillet.csproj" />
+  <Project Path="Scripts/AnalyzeHoles/AnalyzeHoles.csproj" />
+  <Project Path="Scripts/ClearanceAnalysis/ClearanceAnalysis.csproj" />
+  <Project Path="Scripts/ExtractBOM/ExtractBOM.csproj" />
+  <Project Path="Scripts/InterferenceAnalysis/InterferenceAnalysis.csproj" />
+</Solution>
