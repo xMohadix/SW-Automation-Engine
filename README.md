@@ -167,7 +167,9 @@ Before displacing a component, its active mates must be temporarily suppressed:
 ### 2. Original Position Capture & Transformation Matrix Translation
 SolidWorks represents 3D spatial orientation and position using a **4×4 Homogeneous Transformation Matrix**:
 
-$$T = \begin{bmatrix} R_{11} & R_{12} & R_{13} & T_x \\ R_{21} & R_{22} & R_{23} & T_y \\ R_{31} & R_{32} & R_{33} & T_z \\ 0 & 0 & 0 & 1 \end{bmatrix}$$
+$$
+T = \begin{bmatrix} R_{11} & R_{12} & R_{13} & T_x \\ R_{21} & R_{22} & R_{23} & T_y \\ R_{31} & R_{32} & R_{33} & T_z \\ 0 & 0 & 0 & 1 \end{bmatrix}
+$$
 
 Where $R$ is the $3\times3$ rotation submatrix, and $T$ is the $3\times1$ translation vector. The API retrieves this matrix via `Transform2.ArrayData` as a 16-element array. Indices 9, 10, and 11 represent $T_x$, $T_y$, and $T_z$ (in meters).
 
@@ -223,23 +225,47 @@ SolidWorks API methods frequently return `null` rather than throwing managed exc
 
 # Sample CLI Applications
 
-The `Scripts/` directory contains standalone C# Console applications demonstrating specific automation workflows. Each script references `SolidWorks_Lib.csproj`, controls SolidWorks (headlessly or with UI), and exports results:
+The `Scripts/` directory contains standalone C# Console applications demonstrating specific automation workflows. Each script references `Solidworks_Lib.csproj`, controls SolidWorks (headlessly or with visible UI), and exports structured reports:
 
-* **`AnalyzeHoles`**: Inspects Hole Wizard features, reporting standard designations, diameters, and depths.
-* **`ClearanceAnalysis`**: Translates target components along coordinate axes to test dynamic clearances.
-* **`ExtractBOM`**: Generates a Bill of Materials with component counts from assembly structures.
-* **`InspectFillet`**: Scans fillet features and automatically captures focused screenshots.
-* **`InterferenceAnalysis`**: Scans assemblies for physical collisions, exporting deduplicated CSV reports.
-* **`MassAnalysis`**: Computes mass, volume, and surface area properties.
+| CLI Application | Target | SW Mode | Input Arguments / Prompts | Generated Outputs |
+| :--- | :--- | :--- | :--- | :--- |
+| **`AnalyzeHoles`** | `.sldprt` / `.sldasm` | Headless (`head: false`) | Target file path (`args[0]` or interactive prompt) | `Hole_Analysis_Report.csv` (complete Hole Wizard parameters, hole types, depths, DFM flags) |
+| **`ClearanceAnalysis`** | `.sldasm` | Headless (`head: false`) | Target assembly path, component name, tolerance distance (mm), axes selection (`+/-X`, `+/-Y`, `+/-Z`) | `Clearance_Detailed_Report.csv` & console pass/fail status |
+| **`ExtractBOM`** | `.sldasm` | Headless (`head: false`) | Target assembly path (`args[0]` or interactive prompt) | `BOM_Report.csv` (component quantities and counts) |
+| **`InspectFillet`** | `.sldprt` / `.sldasm` | Visible GUI (`head: true`) | Target file path (`args[0]` or interactive prompt) | `screenshots/*.jpg` (focused feature screenshots) & `Fillet_Analysis_Report.csv` |
+| **`InterferenceAnalysis`** | `.sldasm` | Headless (`head: false`) | Target assembly path, screw inclusion (Y/N), coincident face handling (Y/N) | `Interference_Report.csv` (deduplicated collision pairs) |
+
+> [!NOTE]
+> All CLI scripts accept the target document path directly as a command-line argument (`args[0]`) or fall back to an interactive console prompt if omitted. Output files (`.csv` reports, screenshots) are automatically saved in the directory of the target CAD file.
+
+---
+
+### Running CLI Applications
+
+You can run any tool directly using the .NET CLI without pre-compiling binaries:
+
+```powershell
+# Direct execution passing file path as an argument:
+dotnet run --project Scripts/InterferenceAnalysis -- "C:\CAD_Models\Enclosure_Assembly.sldasm"
+
+# Interactive execution (prompts for document path and options):
+dotnet run --project Scripts/ClearanceAnalysis
+```
+
+---
 
 ### Building & Publishing Single-File Binaries
-From the terminal (PowerShell or CMD), navigate to the script directory and publish a self-contained single-file executable:
+
+To produce standalone, self-contained executables for distribution without requiring the .NET Runtime on the host machine:
+
 ```powershell
+# Publish a specific script as a self-contained single-file executable:
+dotnet publish Scripts/InterferenceAnalysis/InterferenceAnalysis.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o ./publish/InterferenceAnalysis
+
+# Or navigate to the script directory and publish directly:
 cd Scripts\InterferenceAnalysis
 dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
 ```
-
-_Note: When executed, the CLI will prompt for the full path of the target SolidWorks document._
 
 ---
 
