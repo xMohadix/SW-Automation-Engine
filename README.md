@@ -4,6 +4,10 @@
 **Author:** Hadi Menzilcioğlu  
 **Target Audience:** Mechanical Design Engineers, CAD Automation Developers, DFM / QC Specialists  
 
+<p align="center">
+  <img src="Demovideos/FilletAnalysis_Demo.gif" alt="SolidWorks Automation Engine Demo - Fillet Inspection & Screenshotting" width="100%" />
+</p>
+
 ---
 
 # Executive Summary & Objectives

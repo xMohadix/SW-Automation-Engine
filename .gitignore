@@ -427,3 +427,16 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Demo Videos & Large Media Captures (Keep Git repository lightweight)
+Demovideos/*.mp4
+Demovideos/*.mkv
+Demovideos/*.mov
+Demovideos/*.avi
+Demovideos/*.wmv
+*.mp4
+*.mkv
+*.mov
+*.avi
+*.wmv
+
